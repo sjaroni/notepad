@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "dakeep-bbf88": {
+      "hosting": {
+        "da-keep": [
+          "dakeep-bbf88"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "dakeep-bbf88"
+  }
+}
