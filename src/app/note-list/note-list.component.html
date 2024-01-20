@@ -24,7 +24,7 @@
             </button>
        </div>
     </div>
-    <div>
-        <app-note *ngFor="let note of noteList" [note]="note"></app-note>
+    <div>        
+        <app-note *ngFor="let note of getList()" [note]="note"></app-note>
     </div>
 </div>
