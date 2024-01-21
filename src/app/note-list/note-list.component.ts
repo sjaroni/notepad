@@ -1,37 +1,37 @@
 import { Component } from '@angular/core';
 import { Note } from '../interfaces/note.interface';
-import { NoteListService } from '../firebase-services/note-list.service'
+import { NoteListService } from '../firebase-services/note-list.service';
 
 @Component({
   selector: 'app-note-list',
   templateUrl: './note-list.component.html',
-  styleUrls: ['./note-list.component.scss']
+  styleUrls: ['./note-list.component.scss'],
 })
 export class NoteListComponent {
   noteList: Note[] = [];
-  favFilter: "all" | "fav" = "all";
-  status: "notes" | "trash" = "notes";
+  favFilter: 'all' | 'fav' = 'all';
+  status: 'notes' | 'trash' = 'notes';
 
-  constructor(private noteService: NoteListService) {
-   
-  }
-
-  // getList(noteType: string): Note[] {
+  constructor(private noteService: NoteListService) {}
+  
   getList(): Note[] {
-    return this.noteService.normalNotes;
-    //return this.noteService.trashNotes;
+    if (this.status == 'trash') {
+      return this.noteService.trashNotes;
+    } else {
+      return this.noteService.normalNotes;
+    }
   }
 
-  changeFavFilter(filter: "all" | "fav") {
+  changeFavFilter(filter: 'all' | 'fav') {
     this.favFilter = filter;
   }
 
   changeTrashStatus() {
-    if (this.status == "trash") {
-      this.status = "notes";
+    if (this.status == 'trash') {
+      this.status = 'notes';
     } else {
-      this.status = "trash";
-      this.favFilter = "all";
+      this.status = 'trash';
+      this.favFilter = 'all';
     }
   }
 }

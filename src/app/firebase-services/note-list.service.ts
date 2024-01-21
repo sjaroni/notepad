@@ -7,6 +7,8 @@ import {
   doc,
   onSnapshot,
   addDoc,
+  updateDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -60,14 +62,60 @@ export class NoteListService {
     });
   }
 
-  async addNote(item: Note) {
-    await addDoc(this.getNotesRef(), item)
+  // Insert-Funktion
+  async addNote(item: Note, colId: 'notes' | 'trash') {
+    
+    // Ternary operator
+    let collection = (colId === 'trash') ? this.getTrashRef() : this.getNotesRef();
+    
+    //let collection;
+    // if (colId == 'trash') {
+    //   collection = this.getTrashRef();
+    // } else {
+    //   collection = this.getNotesRef();
+    // }
+
+    await addDoc(collection, item)
       .catch((err) => {
         console.error(err);
       })
       .then((docRef) => {
         console.log('Document written with ID: ', docRef?.id);
+      });    
+  }
+
+  // Delete-Funktion
+  async deleteNote(colId: 'notes' | 'trash', docId: string) {
+    await deleteDoc(this.getSingleDocRef(colId, docId)).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  // Update-Funktion
+  async updateNote(note: Note) {
+    if (note.id) {
+      let docRef = this.getSingleDocRef(this.getColIdFromNote(note), note.id);
+      await updateDoc(docRef, this.getCleanJson(note)).catch((err) => {
+        console.log(err);
       });
+    }
+  }
+
+  getColIdFromNote(note: Note): string {
+    if (note.type == 'note') {
+      return 'notes';
+    } else {
+      return 'trash';
+    }
+  }
+
+  getCleanJson(note: Note): {} {
+    return {
+      type: note.type,
+      title: note.title,
+      content: note.content,
+      marked: note.marked,
+    };
   }
 
   getNotesRef() {
