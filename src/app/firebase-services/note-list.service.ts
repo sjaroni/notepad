@@ -9,6 +9,10 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  query,
+  where,
+  limit,
+  orderBy,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -54,7 +58,10 @@ export class NoteListService {
   }
 
   subNotesList() {
-    return onSnapshot(this.getNotesRef(), (list) => {
+    //const q = query(this.getNotesRef(), where('state', '==', 'CA'), orderBy('state'), limit(100));
+    const q = query(this.getNotesRef(), orderBy('state'), limit(100));
+
+    return onSnapshot(q, (list) => {
       this.normalNotes = [];
       list.forEach((element) => {
         this.normalNotes.push(this.setNoteObject(element.data(), element.id));
@@ -64,10 +71,10 @@ export class NoteListService {
 
   // Insert-Funktion
   async addNote(item: Note, colId: 'notes' | 'trash') {
-    
     // Ternary operator
-    let collection = (colId === 'trash') ? this.getTrashRef() : this.getNotesRef();
-    
+    let collection =
+      colId === 'trash' ? this.getTrashRef() : this.getNotesRef();
+
     //let collection;
     // if (colId == 'trash') {
     //   collection = this.getTrashRef();
@@ -81,7 +88,7 @@ export class NoteListService {
       })
       .then((docRef) => {
         console.log('Document written with ID: ', docRef?.id);
-      });    
+      });
   }
 
   // Delete-Funktion
