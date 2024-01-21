@@ -6,6 +6,7 @@ import {
   collectionData,
   doc,
   onSnapshot,
+  addDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -54,9 +55,19 @@ export class NoteListService {
     return onSnapshot(this.getNotesRef(), (list) => {
       this.normalNotes = [];
       list.forEach((element) => {
-        this.normalNotes.push(this.setNoteObject(element.data(), element.id));        
+        this.normalNotes.push(this.setNoteObject(element.data(), element.id));
       });
-    });   
+    });
+  }
+
+  async addNote(item: Note) {
+    await addDoc(this.getNotesRef(), item)
+      .catch((err) => {
+        console.error(err);
+      })
+      .then((docRef) => {
+        console.log('Document written with ID: ', docRef?.id);
+      });
   }
 
   getNotesRef() {

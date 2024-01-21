@@ -16,8 +16,10 @@ export class NoteListComponent {
    
   }
 
+  // getList(noteType: string): Note[] {
   getList(): Note[] {
     return this.noteService.normalNotes;
+    //return this.noteService.trashNotes;
   }
 
   changeFavFilter(filter: "all" | "fav") {
