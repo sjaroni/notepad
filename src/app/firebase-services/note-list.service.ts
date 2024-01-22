@@ -22,20 +22,24 @@ import { Observable } from 'rxjs';
 export class NoteListService {
   trashNotes: Note[] = [];
   normalNotes: Note[] = [];
+  normalMarkedNotes: Note[] = [];
 
   unsubTrash;
   unsubNotes;
+  unsubMarkedNotes;
 
   firestore: Firestore = inject(Firestore);
 
   constructor() {
     this.unsubTrash = this.subTrashList();
     this.unsubNotes = this.subNotesList();
+    this.unsubMarkedNotes = this.subMarkedNotesList();
   }
 
   ngonDestroy() {
     this.unsubNotes();
     this.unsubTrash();
+    this.unsubMarkedNotes();
   }
 
   setNoteObject(obj: any, id: string): Note {
@@ -58,8 +62,8 @@ export class NoteListService {
   }
 
   subNotesList() {
-    //const q = query(this.getNotesRef(), where('state', '==', 'CA'), orderBy('state'), limit(100));
-    const q = query(this.getNotesRef(), orderBy('state'), limit(100));
+    //const q = query(this.getNotesRef(), where('marked', '==', false), orderBy('title'), limit(100));
+    const q = query(this.getNotesRef(), where('marked', '==', false));
 
     return onSnapshot(q, (list) => {
       this.normalNotes = [];
@@ -69,18 +73,24 @@ export class NoteListService {
     });
   }
 
+  subMarkedNotesList() {
+    //const q = query(this.getNotesRef(), where('marked', '==', false), orderBy('title'), limit(100));
+    const q = query(this.getNotesRef(), where('marked', '==', true));
+
+    return onSnapshot(q, (list) => {
+      this.normalMarkedNotes = [];
+      list.forEach((element) => {
+        this.normalMarkedNotes.push(
+          this.setNoteObject(element.data(), element.id)
+        );
+      });
+    });
+  }
+
   // Insert-Funktion
   async addNote(item: Note, colId: 'notes' | 'trash') {
-    // Ternary operator
     let collection =
       colId === 'trash' ? this.getTrashRef() : this.getNotesRef();
-
-    //let collection;
-    // if (colId == 'trash') {
-    //   collection = this.getTrashRef();
-    // } else {
-    //   collection = this.getNotesRef();
-    // }
 
     await addDoc(collection, item)
       .catch((err) => {
